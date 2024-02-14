@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,8 +44,6 @@ public class AuthController
                            BindingResult result,
                            Model model)
     {
-        System.out.println("user in post = " + user);
-
         if(userEntityRepository.existsByEmail(user.getEmail()))
         {
             return "redirect:/register?fail";
@@ -56,12 +53,8 @@ public class AuthController
         {
             model.addAttribute("user", user);
 
-            System.out.println("has errors");
-
             return "register";
         }
-
-        System.out.println("user = " + user);
 
         userEntityService.saveUser(user);
 

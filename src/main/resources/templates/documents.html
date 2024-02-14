@@ -1,10 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Docs</title>
 </head>
 <body>
 Documents
+
+<div th:if="${documents.size() > 0}">
+    <table class="table table-hover">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">File Name</th>
+            <th scope="col">Link</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="document : ${documents}">
+            <td>[[${document.name}]]</td>
+            <td><a th:href="@{${document.url}}">Download</a></td>
+            <td>
+                <a th:href="@{'/documents/delete/' + ${document.name}}" th:documentName="${document.name}" id="btnDelete"
+                   title="Delete this document" class="fa-regular fa-trash-can icon-dark btn-delete">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<!--upload form-->
+
+<div class="container" style="max-width: 500px">
+    <h3 class="mb-3">Thymeleaf File Upload example</h3>
+
+    <form
+            id="uploadForm"
+            method="post"
+            th:action="@{/documents/upload}"
+            enctype="multipart/form-data">
+        <input id="input-document" type="file" name="document" />
+        <button class="btn btn-sm btn-outline-success float-right" type="submit">
+            Upload
+        </button>
+    </form>
+
+    <div
+            th:if="${message != null}"
+            class="alert alert-secondary alert-dismissible fade show text-center message mt-3"
+            role="alert">
+        [[${message}]]
+        <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>
+
 </body>
 </html>

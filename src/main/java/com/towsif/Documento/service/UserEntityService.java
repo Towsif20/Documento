@@ -1,6 +1,5 @@
 package com.towsif.Documento.service;
 
-import com.towsif.Documento.dto.RegistrationDTO;
 import com.towsif.Documento.entity.Role;
 import com.towsif.Documento.entity.UserEntity;
 import com.towsif.Documento.repository.UserEntityRepository;
@@ -24,8 +23,6 @@ public class UserEntityService
     {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.ROLE_USER);
-
-        System.out.println("user in service = " + user);
 
         userEntityRepository.save(user);
     }

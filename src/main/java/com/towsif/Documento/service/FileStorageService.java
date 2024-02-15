@@ -18,45 +18,36 @@ public class FileStorageService
 {
     private final Path root = Paths.get("./uploads");
 
+    public Path getRoot()
+    {
+        return root;
+    }
+
     public void init() throws IOException
     {
         Files.createDirectories(root);
     }
 
-    public void save(MultipartFile file)
+    public void upload(MultipartFile file, Path currentPath) throws IOException
     {
-        try
-        {
-            Files.copy(file.getInputStream(), root.resolve(Objects.requireNonNull(file.getOriginalFilename())));
-        }
-        catch (IOException e)
-        {
-            if(e instanceof FileAlreadyExistsException)
-                throw new RuntimeException("File already exists");
 
-            throw new RuntimeException(e.getMessage());
-        }
+        Files.copy(file.getInputStream(), currentPath.resolve(Objects.requireNonNull(file.getOriginalFilename())));
+
     }
 
-    public org.springframework.core.io.Resource load(String filename)
+    public Resource download(String filename, Path currentPath) throws MalformedURLException
     {
-        try
-        {
-            Path file = root.resolve(filename);
-            Resource resource = new UrlResource(file.toUri());
+        Path file = currentPath.resolve(filename);
 
-            if (resource.exists() || resource.isReadable())
-            {
-                return resource;
-            }
-            else
-            {
-                throw new RuntimeException("Could not read the file!");
-            }
-        }
-        catch (MalformedURLException e)
+        Resource resource = new UrlResource(file.toUri());
+
+        if (resource.exists() || resource.isReadable())
         {
-            throw new RuntimeException("Error: " + e.getMessage());
+            return resource;
+        }
+        else
+        {
+            throw new RuntimeException("Could not read the file!");
         }
     }
 

@@ -33,14 +33,14 @@ Documents
 <!--upload form-->
 
 <div class="container" style="max-width: 500px">
-    <h3 class="mb-3">Thymeleaf File Upload example</h3>
+    <h3 class="mb-3">Add a new document</h3>
 
     <form
             id="uploadForm"
             method="post"
             th:action="@{/documents/upload}"
             enctype="multipart/form-data">
-        <input id="input-document" type="file" name="document" />
+        <input id="input-document" type="file" name="file" accept=".txt, .pdf, .doc, .docx" />
         <button class="btn btn-sm btn-outline-success float-right" type="submit">
             Upload
         </button>

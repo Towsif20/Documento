@@ -51,11 +51,19 @@ public class DocumentController
     }
 
     @GetMapping("/{filename}")
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) throws MalformedURLException
+    public ResponseEntity<Resource> downloadFile(@PathVariable String filename) throws MalformedURLException
     {
         Resource file = documentService.download(filename);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
+
+    @GetMapping("/delete/{filename}")
+    public String deleteFile(@PathVariable String filename) throws IOException
+    {
+        documentService.delete(filename);
+
+        return "redirect:/documents";
     }
 }

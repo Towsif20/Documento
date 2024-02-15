@@ -10,4 +10,6 @@ import java.util.List;
 public interface DocumentRepository extends JpaRepository<Document, Long>
 {
     List<Document> findByUserEmail(String email);
+
+    void removeByUserEmailAndName(String currentUserEmail, String filename);
 }

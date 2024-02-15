@@ -51,4 +51,11 @@ public class FileStorageService
         }
     }
 
+    public void delete(String filename, Path currentPath) throws IOException
+    {
+        Path file = currentPath.resolve(filename);
+
+        Files.deleteIfExists(file);
+    }
+
 }

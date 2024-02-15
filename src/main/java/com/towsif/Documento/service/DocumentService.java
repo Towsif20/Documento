@@ -83,4 +83,16 @@ public class DocumentService
 
         return fileStorageService.download(filename, currentPath);
     }
+
+    @Transactional
+    public void delete(String filename) throws IOException
+    {
+        String currentUserEmail = SecurityUtil.getSessionUser();
+
+        Path currentPath = getCurrentPath();
+
+        fileStorageService.delete(filename, currentPath);
+
+        documentRepository.removeByUserEmailAndName(currentUserEmail, filename);
+    }
 }

@@ -120,6 +120,16 @@ public class UserEntity implements UserDetails
         this.role = role;
     }
 
+    public boolean isAdmin()
+    {
+        return role.equals(Role.ROLE_ADMIN);
+    }
+
+    public boolean isUser()
+    {
+        return role.equals(Role.ROLE_USER);
+    }
+
     @Override
     public String toString()
     {

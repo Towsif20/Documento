@@ -44,6 +44,8 @@ public class AuthController
                            BindingResult result,
                            Model model)
     {
+        System.out.println("registration request");
+
         if(userEntityRepository.existsByEmail(user.getEmail()))
         {
             return "redirect:/register?fail";
@@ -55,6 +57,8 @@ public class AuthController
 
             return "register";
         }
+
+        System.out.println("user = " + user);
 
         userEntityService.saveUser(user);
 

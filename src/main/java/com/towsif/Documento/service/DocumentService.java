@@ -1,22 +1,18 @@
 package com.towsif.Documento.service;
 
 import com.towsif.Documento.entity.Document;
+import com.towsif.Documento.entity.Role;
 import com.towsif.Documento.entity.UserEntity;
 import com.towsif.Documento.repository.DocumentRepository;
 import com.towsif.Documento.repository.UserEntityRepository;
-import com.towsif.Documento.security.SecurityUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,35 +37,16 @@ public class DocumentService
         return documentRepository.findByUserEmail(email);
     }
 
-    private Path getCurrentPath()
-    {
-        String currentUserEmail = SecurityUtil.getSessionUser();
-
-        return Paths.get(fileStorageService.getRoot().toAbsolutePath() + "/" + currentUserEmail);
-    }
-
     @Transactional
-    public void upload(MultipartFile file, HttpServletRequest request) throws IOException
+    public void upload(MultipartFile file, String username) throws IOException
     {
-        Path currentPath = getCurrentPath();
-
-        Files.createDirectories(currentPath);
-
-        fileStorageService.upload(file, currentPath);
+        fileStorageService.upload(file, username);
 
         Document document = new Document();
 
         document.setName(file.getOriginalFilename());
 
-        String url = ServletUriComponentsBuilder.fromRequestUri(request)
-                        .replacePath(null)
-                        .build()
-                        .toUriString()
-                        .concat("/documents/" + file.getOriginalFilename());
-
-        document.setUrl(url);
-
-        UserEntity user = userEntityRepository.findByEmail(SecurityUtil.getSessionUser())
+        UserEntity user = userEntityRepository.findByEmail(username)
                 .orElseThrow();
 
         document.setUser(user);
@@ -77,22 +54,32 @@ public class DocumentService
         documentRepository.save(document);
     }
 
-    public Resource download(String filename) throws MalformedURLException
+    public Resource download(Document document) throws MalformedURLException
     {
-        Path currentPath = getCurrentPath();
-
-        return fileStorageService.download(filename, currentPath);
+        return fileStorageService.download(document);
     }
 
     @Transactional
-    public void delete(String filename) throws IOException
+    public void delete(Document document) throws IOException
     {
-        String currentUserEmail = SecurityUtil.getSessionUser();
+        String username = document.getUser().getUsername();
+        String filename = document.getName();
 
-        Path currentPath = getCurrentPath();
+        fileStorageService.delete(document);
 
-        fileStorageService.delete(filename, currentPath);
+        documentRepository.removeByUserEmailAndName(username, filename);
+    }
 
-        documentRepository.removeByUserEmailAndName(currentUserEmail, filename);
+    public List<Document> findAllForAdminUser(UserEntity user)
+    {
+        List<Document> allUserDocs = documentRepository.findByUserRole(Role.ROLE_USER);
+        List<Document> currentAdminDocs = documentRepository.findByUser(user);
+
+        List<Document> availableDocsForCurrentAdmin = new ArrayList<>();
+
+        availableDocsForCurrentAdmin.addAll(allUserDocs);
+        availableDocsForCurrentAdmin.addAll(currentAdminDocs);
+
+        return availableDocsForCurrentAdmin;
     }
 }

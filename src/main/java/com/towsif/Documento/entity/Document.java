@@ -11,8 +11,6 @@ public class Document
 
     private String name;
 
-    private String url;
-
     @ManyToOne
     private UserEntity user;
 
@@ -38,16 +36,6 @@ public class Document
     public void setName(String name)
     {
         this.name = name;
-    }
-
-    public String getUrl()
-    {
-        return url;
-    }
-
-    public void setUrl(String url)
-    {
-        this.url = url;
     }
 
     public UserEntity getUser()

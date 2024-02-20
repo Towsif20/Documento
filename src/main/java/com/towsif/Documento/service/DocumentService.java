@@ -6,12 +6,14 @@ import com.towsif.Documento.entity.UserEntity;
 import com.towsif.Documento.repository.DocumentRepository;
 import com.towsif.Documento.repository.UserEntityRepository;
 import org.springframework.core.io.Resource;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,5 +83,20 @@ public class DocumentService
         availableDocsForCurrentAdmin.addAll(currentAdminDocs);
 
         return availableDocsForCurrentAdmin;
+    }
+
+    public void verifyUser(Principal principal, Document document)
+    {
+        String username = principal.getName();
+        UserEntity user = userEntityRepository.findByEmail(username).orElseThrow();
+
+        if(!username.equals(document.getUser().getUsername()))
+        {
+            if(user.isUser())
+                throw new AccessDeniedException("Access denied!");
+
+            if(user.isAdmin() && document.getUser().isAdmin())
+                throw new AccessDeniedException("Access denied!");
+        }
     }
 }

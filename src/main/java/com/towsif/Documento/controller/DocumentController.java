@@ -82,17 +82,7 @@ public class DocumentController
 
         Document document = documentRepository.findById(id).orElseThrow();
 
-        String username = principal.getName();
-        UserEntity user = userEntityRepository.findByEmail(username).orElseThrow();
-
-        if(!username.equals(document.getUser().getUsername()))
-        {
-            if(user.isUser())
-                throw new AccessDeniedException("Access denied!");
-
-            if(user.isAdmin() && document.getUser().isAdmin())
-                throw new AccessDeniedException("Access denied!");
-        }
+        documentService.verifyUser(principal, document);
 
         Resource file = documentService.download(document);
 
@@ -109,17 +99,7 @@ public class DocumentController
 
         Document document = documentRepository.findById(id).orElseThrow();
 
-        String username = principal.getName();
-        UserEntity user = userEntityRepository.findByEmail(username).orElseThrow();
-
-        if(!username.equals(document.getUser().getUsername()))
-        {
-            if(user.isUser())
-                throw new AccessDeniedException("Access denied!");
-
-            if(user.isAdmin() && document.getUser().isAdmin())
-                throw new AccessDeniedException("Access denied!");
-        }
+        documentService.verifyUser(principal, document);
 
         documentService.delete(document);
 
